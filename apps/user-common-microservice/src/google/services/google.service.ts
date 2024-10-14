@@ -15,9 +15,9 @@ export class GoogleService {
     private connection: Connection,
   ) {
     this.googleOAuth2Client = new OAuth2Client({
-      clientId:
-        '940059582838-0b5g069d4oucqsnqng90pkif8jfkgj7b.apps.googleusercontent.com',
-      clientSecret: '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',
+      // clientId:
+      //   '940059582838-0b5g069d4oucqsnqng90pkif8jfkgj7b.apps.googleusercontent.com',
+      // clientSecret: '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',
       redirectUri: 'http://localhost:3001/login-google',
     });
   }
