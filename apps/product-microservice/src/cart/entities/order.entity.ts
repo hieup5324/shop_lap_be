@@ -3,23 +3,24 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  In,
   JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Cart } from './cart.entity';
 import { Product } from '../../product/entities/product.entity';
+import { OrderDetail } from './order-detail.entity';
 
-@Entity({ name: 'product_in_cart' })
-export class ProductInCart {
+@Entity({ name: 'order' })
+export class Order {
   @PrimaryColumn({
     type: 'char',
     length: 26,
-    name: 'cart_id',
+    name: 'order_id',
   })
-  cartId: string;
+  orderId: string;
 
   @PrimaryColumn({
     type: 'char',
@@ -28,12 +29,12 @@ export class ProductInCart {
   })
   productId: string;
 
-  @ManyToOne(() => Cart)
+  @ManyToOne(() => OrderDetail)
   @JoinColumn({
-    name: 'cart_id',
-    referencedColumnName: 'cartId',
+    name: 'order_id',
+    referencedColumnName: 'orderId',
   })
-  cart: Cart;
+  orderDetail: OrderDetail;
 
   @ManyToOne(() => Product)
   @JoinColumn({

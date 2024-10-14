@@ -33,6 +33,25 @@ services:
     depends_on:
       - mysqldb
 
+  product-common:
+    build:
+      context: .
+      dockerfile: ./apps/product-microservice/Dockerfile
+      args:
+        - APP_ENV
+    command: npm run start:dev product-microservice
+    ports:
+      - 3014:3000
+    volumes:
+      - ./:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules/
+    environment:
+      DB_HOST: mysqldb
+    env_file:
+      - ./apps/product-microservice/.env
+    depends_on:
+      - mysqldb
+
 volumes:
   node_modules:
   mysqldata:

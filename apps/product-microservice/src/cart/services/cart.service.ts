@@ -5,12 +5,11 @@ import { ProductRepository } from '../../product/repositories/product.repository
 import { CartIntput } from '../dtos/cart-input.dto';
 import { ulid } from 'ulid';
 import { plainToInstance } from 'class-transformer';
-import { Cart } from '../entities/cart.entity';
-import { ProductInCart } from '../entities/productInCart.entity';
 import { CartOutput, ProductInCartOutput } from '../dtos/cart-ouput.dto';
 import { Connection } from 'typeorm';
 import { DeliveryService } from '../../delivery/services/delivery.service';
 import { CalculateFeeIntput } from '../../delivery/dtos/calculate-fee-inpput';
+import { OrderDetail } from '../entities/order-detail.entity';
 
 @Injectable()
 export class CartService {
@@ -24,7 +23,7 @@ export class CartService {
 
   async createCart(userId: string, cartIntput: CartIntput) {
     const cartId = ulid();
-    const newCart = plainToInstance(Cart, {
+    const newCart = plainToInstance(OrderDetail, {
       cartId,
       userId,
       addressId: cartIntput.addressId,
@@ -40,7 +39,7 @@ export class CartService {
       productIds,
     );
 
-    const productsInCart: ProductInCart[] = [];
+    const productsInCart: OrderDetail[] = [];
     const productsInCartOutput: ProductInCartOutput[] = [];
     foundProducts.forEach((product) => {
       let amount: number = null;
@@ -51,7 +50,7 @@ export class CartService {
       });
 
       productsInCart.push(
-        plainToInstance(ProductInCart, {
+        plainToInstance(OrderDetail, {
           cartId: cartId,
           productId: product.productId,
           amount: amount,
@@ -90,74 +89,74 @@ export class CartService {
     );
   }
 
-  async updateStatusPaid(cartId: string) {
-    const cart = await this.cartRepository.findOne({
-      where: { cartId: cartId },
-    });
+  // async updateStatusPaid(cartId: string) {
+  //   const cart = await this.cartRepository.findOne({
+  //     where: { cartId: cartId },
+  //   });
 
-    if (!cart) throw new BadRequestException('Not found order');
+  //   if (!cart) throw new BadRequestException('Not found order');
 
-    return await this.cartRepository.update(
-      { cartId: cartId },
-      { isPaid: true },
-    );
-  }
+  //   return await this.cartRepository.update(
+  //     { cartId: cartId },
+  //     { isPaid: true },
+  //   );
+  // }
 
-  async getCarts(userId: string, cartId: string) {
-    const cartsOuput: CartOutput[] = [];
+  // async getCarts(userId: string, cartId: string) {
+  //   const cartsOuput: CartOutput[] = [];
 
-    const carts = await this.cartRepository.find({
-      where: { userId: userId },
-      relations: ['productsInCart', 'productsInCart.product'],
-    });
+  //   const carts = await this.cartRepository.find({
+  //     where: { userId: userId },
+  //     relations: ['productsInCart', 'productsInCart.product'],
+  //   });
 
-    await Promise.all(
-      carts.map(async (cart) => {
-        const deliverFee = await this.deliveryService.calculateFee(
-          plainToInstance(CalculateFeeIntput, {
-            districtId: cart.addressId,
-            wardCode: cart.wardCode,
-          }),
-        );
+  //   await Promise.all(
+  //     carts.map(async (cart) => {
+  //       const deliverFee = await this.deliveryService.calculateFee(
+  //         plainToInstance(CalculateFeeIntput, {
+  //           districtId: cart.addressId,
+  //           wardCode: cart.wardCode,
+  //         }),
+  //       );
 
-        const productsInCard: ProductInCartOutput[] = [];
-        cart.productsInCart.forEach((productInCart) => {
-          productsInCard.push(
-            plainToInstance(ProductInCartOutput, {
-              ...productInCart,
-              ...productInCart.product,
-            }),
-          );
-        });
+  //       const productsInCard: ProductInCartOutput[] = [];
+  //       cart.Order.forEach((productInCart) => {
+  //         productsInCard.push(
+  //           plainToInstance(ProductInCartOutput, {
+  //             ...productInCart,
+  //             ...productInCart.product,
+  //           }),
+  //         );
+  //       });
 
-        cartsOuput.push(
-          plainToInstance(
-            CartOutput,
-            {
-              deliverFee: deliverFee,
-              productsInCard,
-              ...cart,
-            },
-            { excludeExtraneousValues: true },
-          ),
-        );
-      }),
-    );
+  //       cartsOuput.push(
+  //         plainToInstance(
+  //           CartOutput,
+  //           {
+  //             deliverFee: deliverFee,
+  //             productsInCard,
+  //             ...cart,
+  //           },
+  //           { excludeExtraneousValues: true },
+  //         ),
+  //       );
+  //     }),
+  //   );
 
-    return cartsOuput.filter((value) => {
-      if (cartId !== undefined) return value.cartId === cartId;
-      else return true;
-    });
-  }
+  //   return cartsOuput.filter((value) => {
+  //     if (cartId !== undefined) return value.cartId === cartId;
+  //     else return true;
+  //   });
+  // }
 
-  async deleteCart(cartId: string) {
-    const deletedCart = await this.cartRepository.findOne({
-      where: { cartId },
-    });
+  // async deleteCart(cartId: string) {
+  //   const deletedCart = await this.cartRepository.findOne({
+  //     where: { cartId },
+  //   });
 
-    if (!deletedCart) throw new BadRequestException('Not found order');
+  //   if (!deletedCart) throw new BadRequestException('Not found order');
 
-    await this.productInCartRepository.delete({ cartId: cartId });
-    return await this.cartRepository.softRemove(deletedCart);
-  }
+  //   await this.productInCartRepository.delete({ cartId: cartId });
+  //   return await this.cartRepository.softRemove(deletedCart);
+  // }
 }

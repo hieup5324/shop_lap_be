@@ -50,6 +50,13 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  @Get('/me')
+  async getMe() {
+    return {
+      msg: 'Hello from user microservice',
+    };
+  }
+
   @Get('/:id')
   @Permissions(USER_ROLE.READ_USER, USER_ROLE.ALL_USER)
   @UseGuards(PermissionGuard)

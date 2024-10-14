@@ -2,8 +2,8 @@ import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Role } from './role.entity';
 import { User } from './user.entity';
 
-@Entity({ name: 'user_authorities' })
-export class UserAuthority {
+@Entity({ name: 'user_role' })
+export class UserRole {
   @PrimaryColumn({
     type: 'char',
     length: 26,
@@ -18,7 +18,7 @@ export class UserAuthority {
   })
   roleId: string;
 
-  @ManyToOne(() => User, (user) => user.userAuthorities, {
+  @ManyToOne(() => User, (user) => user.userRole, {
     orphanedRowAction: 'delete',
   })
   @JoinColumn({
@@ -27,7 +27,7 @@ export class UserAuthority {
   })
   user: User;
 
-  @ManyToOne(() => Role, (user) => user.userAuthorities, {
+  @ManyToOne(() => Role, (user) => user.userRole, {
     orphanedRowAction: 'delete',
   })
   @JoinColumn({

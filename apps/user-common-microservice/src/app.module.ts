@@ -10,7 +10,7 @@ import { EmailController } from './email/controllers/email.controller';
 import { EmailModule } from './email/email.module';
 import { RoleController } from './user/controllers/role.controller';
 import { Role } from './user/entities/role.entity';
-import { UserAuthority } from './user/entities/user-authority.entity';
+import { UserRole } from './user/entities/user-role.entity';
 import { User } from './user/entities/user.entity';
 import { S3Module } from './s3/s3.module';
 import { SmsModule } from './sms/sms.module';
@@ -49,7 +49,7 @@ import { GoogleModule } from './google/google.module';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.name'),
-        entities: [User, Role, UserAuthority],
+        entities: [User, Role, UserRole],
         synchronize: true,
       }),
     }),

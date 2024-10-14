@@ -3,9 +3,15 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Category } from '../../category/entities/category.entity';
+import { Review } from '../../reviews/review.entity';
+import { Discount } from '../../discount/discount.entity';
 
 @Entity({ name: 'product' })
 export class Product {
@@ -35,6 +41,20 @@ export class Product {
     type: 'int',
   })
   price: number;
+
+  @Column({
+    name: 'final_price',
+    type: 'int',
+    nullable: true,
+  })
+  finalPrice: number; // Giá sau khi áp dụng giảm giá
+
+  @Column({
+    name: 'has_discount',
+    type: 'boolean',
+    default: false,
+  })
+  hasDiscount: boolean; // Sản phẩm có giảm giá hay không
 
   @Column({
     name: 'description',
@@ -73,4 +93,17 @@ export class Product {
     nullable: true,
   })
   deletedAt: Date;
+
+  @ManyToOne(() => Category)
+  @JoinColumn({
+    name: 'category_id',
+    referencedColumnName: 'id',
+  })
+  category: Category;
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[]; // Liên kết với bảng Review
+
+  @OneToMany(() => Discount, (discount) => discount.product)
+  discounts: Discount[]; // Liên kết với bảng Discount
 }

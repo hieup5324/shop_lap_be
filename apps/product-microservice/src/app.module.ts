@@ -7,11 +7,14 @@ import { AppService } from './app.service';
 import { ProductModule } from './product/product.module';
 import { Product } from './product/entities/product.entity';
 import { ConfigurationModule } from './config/configuration.module';
-import { HttpRequestModule } from '../../../shared/http-requests/http-request.module';
 import { CartModule } from './cart/cart.module';
-import { Cart } from './cart/entities/cart.entity';
-import { ProductInCart } from './cart/entities/productInCart.entity';
 import { GHNModule } from './delivery/delivery.module';
+import { Category } from './category/entities/category.entity';
+import { Invoice } from './invoice/invoice.entity';
+import { OrderDetail } from './cart/entities/order-detail.entity';
+import { Order } from './cart/entities/order.entity';
+import { Review } from './reviews/review.entity';
+import { Discount } from './discount/discount.entity';
 
 @Module({
   imports: [
@@ -30,7 +33,15 @@ import { GHNModule } from './delivery/delivery.module';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.name'),
-        entities: [Product, Cart, ProductInCart],
+        entities: [
+          Product,
+          Order,
+          OrderDetail,
+          Category,
+          Invoice,
+          Review,
+          Discount,
+        ],
         synchronize: true,
       }),
     }),

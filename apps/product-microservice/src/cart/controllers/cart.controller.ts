@@ -25,21 +25,21 @@ export class CartController {
     return await this.cartService.createCart(userId, cartInput);
   }
 
-  @Patch()
-  async updateStatusPaid(@Query('cartId') cartId: string) {
-    return await this.cartService.updateStatusPaid(cartId);
-  }
+  // @Patch()
+  // async updateStatusPaid(@Query('cartId') cartId: string) {
+  //   return await this.cartService.updateStatusPaid(cartId);
+  // }
 
-  @Get()
-  async getCarts(
-    @Query('userId') userId: string,
-    @Query('cartId') cartId: string,
-  ): Promise<CartOutput[]> {
-    return await this.cartService.getCarts(userId, cartId);
-  }
+  // @Get()
+  // async getCarts(
+  //   @Query('userId') userId: string,
+  //   @Query('cartId') cartId: string,
+  // ): Promise<CartOutput[]> {
+  //   return await this.cartService.getCarts(userId, cartId);
+  // }
 
-  @Delete('/:cartId')
-  async deleteProduct(@Param('cartId') cartId: string): Promise<any> {
-    return await this.cartService.deleteCart(cartId);
-  }
+  // @Delete('/:cartId')
+  // async deleteProduct(@Param('cartId') cartId: string): Promise<any> {
+  //   return await this.cartService.deleteCart(cartId);
+  // }
 }

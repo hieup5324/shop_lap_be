@@ -3,14 +3,11 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
   OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from './role.entity';
-import { UserAuthority } from './user-authority.entity';
+import { UserRole } from './user-role.entity';
 
 @Entity({ name: 'user' })
 export class User {
@@ -94,10 +91,10 @@ export class User {
   })
   dateOfBirth?: Date;
 
-  @OneToMany(() => UserAuthority, (userAuthority) => userAuthority.user, {
+  @OneToMany(() => UserRole, (userRole) => userRole.user, {
     cascade: true,
   })
-  userAuthorities: UserAuthority[];
+  userRole: UserRole[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

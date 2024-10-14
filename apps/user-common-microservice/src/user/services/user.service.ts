@@ -16,7 +16,7 @@ import { Auth0UserInput } from '../dtos/auth0-user-input.dto';
 import { RoleOutput } from '../dtos/role-output.dto';
 import { UserInput } from '../dtos/user-input.dto';
 import { UserOutput } from '../dtos/user-output.dto';
-import { UserAuthority } from '../entities/user-authority.entity';
+import { UserRole } from '../entities/user-role.entity';
 import { User } from '../entities/user.entity';
 import { RoleRepository } from '../repositories/role.repository';
 import { UserAuthorityRepository } from '../repositories/user-authority.repository';
@@ -81,10 +81,10 @@ export class UserService {
     });
     const foundRoles = await this.roleRepository.getRoleIds(userInput.roles);
     const roleIds = foundRoles.map((role) => role.roleId);
-    const userAuthorities: UserAuthority[] = [];
+    const userAuthorities: UserRole[] = [];
     roleIds.forEach((roleId) => {
       userAuthorities.push(
-        plainToInstance(UserAuthority, {
+        plainToInstance(UserRole, {
           userId: newUserId,
           roleId: roleId,
         }),

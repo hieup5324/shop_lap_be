@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { UserAuthority } from './user-authority.entity';
+import { UserRole } from './user-role.entity';
 
 @Entity({ name: 'roles' })
 export class Role {
@@ -17,8 +17,8 @@ export class Role {
   })
   roleName: string;
 
-  @OneToMany(() => UserAuthority, (userAuthority) => userAuthority.role, {
+  @OneToMany(() => UserRole, (userRole) => userRole.role, {
     cascade: true,
   })
-  userAuthorities: UserAuthority[];
+  userRole: UserRole[];
 }

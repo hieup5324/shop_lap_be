@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Cart } from '../entities/cart.entity';
+import { OrderDetail } from '../entities/order-detail.entity';
 
 @Injectable()
-export class CartRepository extends Repository<Cart> {
+export class CartRepository extends Repository<OrderDetail> {
   constructor(private dataSource: DataSource) {
-    super(Cart, dataSource.createEntityManager());
+    super(OrderDetail, dataSource.createEntityManager());
   }
 
-  async getCartIds(cartIds: string[]): Promise<Cart[]> {
+  async getCartIds(cartIds: string[]): Promise<OrderDetail[]> {
     const queryBuilder = this.createQueryBuilder('carts').where(
       'carts.cartId IN (:cartIds)',
       { cartIds: cartIds },

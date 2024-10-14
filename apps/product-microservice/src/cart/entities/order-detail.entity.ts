@@ -7,16 +7,16 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProductInCart } from './productInCart.entity';
+import { Order } from './order.entity';
 
-@Entity({ name: 'cart' })
-export class Cart {
+@Entity({ name: 'order-detail' })
+export class OrderDetail {
   @PrimaryColumn({
-    name: 'cart_id',
+    name: 'order_id',
     type: 'char',
     length: 26,
   })
-  cartId: string;
+  orderId: string;
 
   @Column({
     name: 'user_id',
@@ -54,8 +54,8 @@ export class Cart {
   })
   note: string;
 
-  @OneToMany(() => ProductInCart, (productInCart) => productInCart.cart)
-  productsInCart: ProductInCart[];
+  @OneToMany(() => Order, (order) => order.orderDetail)
+  orderDetail: OrderDetail[];
 
   @CreateDateColumn({
     name: 'created_at',
