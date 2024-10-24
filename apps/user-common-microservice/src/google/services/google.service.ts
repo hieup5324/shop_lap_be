@@ -1,62 +1,62 @@
-import { BadRequestException, Injectable, Res } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
-import { UserGoogleOutput } from '../dtos/User.dto';
 import { User } from '../../user/entities/user.entity';
 import { UserRepository } from '../../user/repositories/user.repository';
-import { Connection } from 'typeorm';
 import { ulid } from 'ulid';
 import { plainToInstance } from 'class-transformer';
 import { UserOutput } from '../../user/dtos/user-output.dto';
 
 @Injectable()
 export class GoogleService {
-  constructor(
-    private readonly userRepository: UserRepository,
-    private connection: Connection,
-  ) {
+  private readonly googleOAuth2Client: OAuth2Client;
+
+  constructor(private readonly userRepository: UserRepository) {
     this.googleOAuth2Client = new OAuth2Client({
-      // clientId:
-      //   '940059582838-0b5g069d4oucqsnqng90pkif8jfkgj7b.apps.googleusercontent.com',
-      // clientSecret: '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',
-      redirectUri: 'http://localhost:3001/login-google',
+      clientId:
+        '1011324815504-7dqgi3ifacjt5iuerboua3onvp6carmb.apps.googleusercontent.com',
+      clientSecret: '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',
+      redirectUri: 'http://localhost:3001/google/auth/google/callback',
     });
   }
-  googleLogin(req) {
+
+  async googleLogin(req) {
     const user = req.user;
     const newUser = plainToInstance(User, {
       userId: ulid(),
       email: user.email,
-      password: user.email,
+      password: user.email, // Mật khẩu không nên lưu trữ, hãy xem xét cách khác
       firstName: user.firstName,
       lastName: user.lastName,
       photoUrl: user.picture,
       auth0userId: user.email,
-      phone: user.phoneNumber,
+      phone: user.phoneNumber || null,
     });
 
-    this.addUser(newUser);
-    const token = user.accessToken;
-    const userdb = newUser;
-    return { userdb, token };
+    // await this.addUser(newUser);
+    const token = this.generateToken(user); // Tạo token JWT cho người dùng
+    return { userdb: newUser, token };
   }
 
-  async addUser(user: User) {
+  private async addUser(user: User) {
     const userdb = await this.userRepository.findOne({
       where: { email: user.email },
     });
-    if (userdb) throw new BadRequestException('User is exits');
+    if (userdb) throw new BadRequestException('User already exists');
     const newUser = plainToInstance(User, user);
-    const userOutput = await this.userRepository.save(newUser);
-
-    return plainToInstance(UserOutput, userOutput);
+    await this.userRepository.save(newUser);
   }
 
-  logout(token: string) {
-    this.revokeAccessToken(token);
+  async logout(token: string) {
+    await this.revokeAccessToken(token);
   }
-  private readonly googleOAuth2Client: OAuth2Client;
 
-  async revokeAccessToken(accessToken: string): Promise<void> {
+  private async revokeAccessToken(accessToken: string): Promise<void> {
     await this.googleOAuth2Client.revokeToken(accessToken);
+  }
+
+  private generateToken(user: any): string {
+    // Implement your JWT token generation logic here
+    // Example: return this.jwtService.sign(user);
+    return 'JWT_TOKEN'; // Placeholder
   }
 }
