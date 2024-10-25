@@ -12,9 +12,8 @@ export class GoogleService {
 
   constructor(private readonly userRepository: UserRepository) {
     this.googleOAuth2Client = new OAuth2Client({
-      clientId:
-        '1011324815504-7dqgi3ifacjt5iuerboua3onvp6carmb.apps.googleusercontent.com',
-      clientSecret: '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',
+      clientId: process.env.AUTH0_CLIENT_ID,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET,
       redirectUri: 'http://localhost:3001/google/auth/google/callback',
     });
   }

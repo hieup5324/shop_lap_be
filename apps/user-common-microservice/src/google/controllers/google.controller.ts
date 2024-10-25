@@ -15,9 +15,7 @@ export class GoogleController {
 
   @Get('login-google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {
-    // Đây sẽ là điểm vào cho Google xác thực
-  }
+  async googleAuth(@Req() req) {}
 
   @Get('auth/google/callback')
   @UseGuards(AuthGuard('google'))
