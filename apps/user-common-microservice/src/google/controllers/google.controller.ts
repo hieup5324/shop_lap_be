@@ -10,7 +10,7 @@ export class GoogleController {
   async logOut(@Req() req, @Res() res) {
     const token = req.headers.authorization?.split(' ')[1];
     await this.googleService.logout(token);
-    res.redirect('http://localhost:3001/login-google');
+    res.redirect('http://localhost:3001/google/login-google');
   }
 
   @Get('login-google')

@@ -23,6 +23,7 @@ export class PermissionGuard implements CanActivate {
     );
     const now = moment().unix();
 
+    console.log('permissions', permisions);
     if (!permisions) {
       return true;
     }

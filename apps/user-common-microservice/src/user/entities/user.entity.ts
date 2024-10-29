@@ -31,7 +31,7 @@ export class User {
     name: 'auth0user_id',
     nullable: true,
   })
-  auth0userId: string;
+  auth0userId?: string;
 
   @Column({
     type: 'varchar',
@@ -42,7 +42,9 @@ export class User {
 
   @Column({
     type: 'varchar',
-    length: 100,
+    length: 255,
+    charset: 'utf8mb4',
+    collation: 'utf8mb4_unicode_ci',
     name: 'last_name',
   })
   lastName: string;
@@ -51,15 +53,17 @@ export class User {
     type: 'varchar',
     length: 100,
     name: 'phone',
+    nullable: true,
   })
-  phone: string;
+  phone?: string;
 
   @Column({
     type: 'varchar',
     length: 100,
     name: 'type',
+    nullable: true,
   })
-  type: string;
+  type?: string;
 
   @Column({
     type: 'varchar',
@@ -90,6 +94,9 @@ export class User {
     nullable: true,
   })
   dateOfBirth?: Date;
+
+  @Column({ type: 'varchar', nullable: true })
+  auth0user_token?: string;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user, {
     cascade: true,

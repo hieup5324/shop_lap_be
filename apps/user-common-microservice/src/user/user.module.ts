@@ -15,6 +15,7 @@ import { HttpRequestModule } from '../../../../shared/http-requests/http-request
 import { PaypalService } from './services/paypal.service';
 import { HttpModule } from '@nestjs/axios';
 import { S3Module } from '../s3/s3.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [UserController],
@@ -33,6 +34,10 @@ import { S3Module } from '../s3/s3.module';
     HttpModule,
     S3Module,
     TypeOrmModule.forFeature([User, Role, UserRole]),
+    JwtModule.register({
+      global: true,
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
   exports: [UserService, RoleService],
 })

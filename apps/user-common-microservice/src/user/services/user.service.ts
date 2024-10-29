@@ -36,6 +36,8 @@ import { ConfigService } from '@nestjs/config';
 import { UserLoginInfo } from '../dtos/user-login-info.dto';
 import { UserLoginOutput } from '../dtos/user-login-output.dto';
 import { S3Service } from '../../s3/services/s3.service';
+import { RegisterUser } from '../dtos/register-user.dto';
+import * as bcrypt from 'bcrypt';
 
 const AUTH0 = 'auth0|';
 @Injectable()
@@ -59,6 +61,50 @@ export class UserService {
   async getUser(userId: string): Promise<UserOutput> {
     const user: User = await this.userRepository.findOneBy({ userId: userId });
     return plainToInstance(UserOutput, user);
+  }
+
+  async registerUser(payload: RegisterUser) {
+    const { email, password, roles } = payload;
+    const emailExist = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+      withDeleted: true,
+    });
+    if (emailExist) {
+      throw new BadRequestException('Email is existed');
+    }
+    const newUserId = ulid();
+    const hashedPw = await bcrypt.hash(password, 10);
+    const newUser = {
+      ...payload,
+      userId: newUserId,
+      password: hashedPw,
+    };
+    const foundRoles = await this.roleRepository.getRoleIds(roles);
+    const roleIds = foundRoles.map((role) => role.roleId);
+    const userRole: UserRole[] = [];
+    roleIds.forEach((roleId) => {
+      userRole.push(
+        plainToInstance(UserRole, {
+          userId: newUserId,
+          roleId: roleId,
+        }),
+      );
+    });
+    await this.connection.transaction(async (trans) => {
+      await trans.save(User, newUser);
+      await trans.save(UserRole, userRole);
+    });
+    const newUserOutput = await this.userRepository.findOne({
+      where: {
+        userId: newUser.userId,
+      },
+      relations: ['userRole', 'userRole.role'],
+    });
+    return plainToInstance(UserOutput, newUserOutput, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async createUser(userInput: UserInput): Promise<UserOutput> {
@@ -232,5 +278,9 @@ export class UserService {
       Math.random().toString(36).slice(2) +
       Math.random().toString(36).toUpperCase().slice(2)
     );
+  }
+
+  async findByEmail(email: string) {
+    return await this.userRepository.findOneBy({ email });
   }
 }

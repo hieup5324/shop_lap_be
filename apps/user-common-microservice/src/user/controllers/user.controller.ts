@@ -29,6 +29,7 @@ import { UserLoginOutput } from '../dtos/user-login-output.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { ExecutePaymentInput } from '../dtos/execute-payment-input.dto';
+import { RegisterUser } from '../dtos/register-user.dto';
 
 @Controller('users')
 export class UserController {
@@ -88,13 +89,8 @@ export class UserController {
   }
 
   @Post()
-  @Permissions(USER_ROLE.CREATE_USER, USER_ROLE.ALL_USER)
-  @UseGuards(PermissionGuard)
-  async createUser(
-    @ReqContext() ctx: RequestContext,
-    @Body() userInput: UserInput,
-  ) {
-    const newUser = await this.userService.createUser(userInput);
+  async register(@Body() request: RegisterUser) {
+    const newUser = await this.userService.registerUser(request);
     return { data: newUser };
   }
 

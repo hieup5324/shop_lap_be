@@ -11,11 +11,15 @@ import { TransformTrimSpace } from '../../../../../shared/decorators/transform-t
 import { USER_ROLE, USER_TYPE } from '../../../../../shared/constants/common';
 import { Transform } from 'class-transformer';
 
-export class UserInput {
+export class RegisterUser {
   @TransformTrimSpace()
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 
   @TransformTrimSpace()
   @IsNotEmpty()
