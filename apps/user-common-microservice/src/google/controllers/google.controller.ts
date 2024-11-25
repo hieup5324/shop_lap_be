@@ -19,7 +19,20 @@ export class GoogleController {
 
   @Get('auth/google/callback')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req) {
-    return this.googleService.googleLogin(req);
+  async googleAuthRedirect(@Req() req, @Res() res) {
+    return await this.googleService.googleLogin(req);
+
+    // // Sau khi đăng nhập thành công, gửi thông tin người dùng và access token về frontend
+    // const frontendUrl = 'http://localhost:3000'; // Frontend URL
+    // res.send(`
+    //   <html>
+    //     <script>
+    //       window.opener.postMessage(${JSON.stringify(
+    //         userData,
+    //       )}, "${frontendUrl}");
+    //       window.close();
+    //     </script>
+    //   </html>
+    // `);
   }
 }

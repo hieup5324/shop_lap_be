@@ -38,6 +38,7 @@ import { UserLoginOutput } from '../dtos/user-login-output.dto';
 import { S3Service } from '../../s3/services/s3.service';
 import { RegisterUser } from '../dtos/register-user.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 const AUTH0 = 'auth0|';
 @Injectable()
@@ -51,6 +52,7 @@ export class UserService {
     private auth0Service: Auth0Service,
     private paypalService: PaypalService,
     private s3Service: S3Service,
+    private jwtService: JwtService,
   ) {}
 
   async getUsers(): Promise<UserOutput[]> {
@@ -282,5 +284,36 @@ export class UserService {
 
   async findByEmail(email: string) {
     return await this.userRepository.findOneBy({ email });
+  }
+
+  async login(requestBody: UserLoginInfo) {
+    const user = await this.findByEmail(requestBody.username);
+    if (!user) {
+      throw new BadRequestException('tài khoản không tồn tại');
+    }
+    const checkpw = await bcrypt.compare(requestBody.password, user.password);
+    if (!checkpw) {
+      throw new BadRequestException('sai mật khẩu');
+    }
+
+    const payload = {
+      id: user.userId,
+      email: user.email,
+      role: user.firstName,
+    };
+    const access_token = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET,
+    });
+    const refresh_token = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET_REFRESH,
+      expiresIn: '7d',
+    });
+
+    return {
+      msg: 'đăng nhập thành công',
+      access_token,
+      refresh_token,
+      user,
+    };
   }
 }

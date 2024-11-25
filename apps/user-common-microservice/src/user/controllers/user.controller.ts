@@ -94,6 +94,11 @@ export class UserController {
     return { data: newUser };
   }
 
+  @Post('/login')
+  async login(@Body() request: UserLoginInfo) {
+    return await this.userService.login(request);
+  }
+
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
   async deleteUser(@Param('id') id: string) {
