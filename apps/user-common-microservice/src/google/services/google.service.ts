@@ -17,7 +17,7 @@ export class GoogleService {
     this.googleOAuth2Client = new OAuth2Client({
       clientId: process.env.AUTH0_CLIENT_ID,
       clientSecret: process.env.AUTH0_CLIENT_SECRET,
-      redirectUri: 'http://localhost:3001/google/auth/google/callback',
+      redirectUri: 'http://localhost:3001/login-google',
     });
   }
 
@@ -36,16 +36,17 @@ export class GoogleService {
       auth0user_token: user.accessToken,
       userRole: [],
     };
-    await this.addUser(newUser);
+    const userdb = await this.userRepository.findOne({
+      where: { email: newUser.email },
+    });
     const token = await this.generateToken(newUser);
+    if (userdb) {
+      return { ...newUser, ...token };
+    }
     return { ...newUser, ...token };
   }
 
-  private async addUser(user: Auth0UserDto) {
-    const userdb = await this.userRepository.findOne({
-      where: { email: user.email },
-    });
-    if (userdb) throw new BadRequestException('User already exists');
+  async addUser(user: Auth0UserDto) {
     await this.userRepository.save(user);
   }
 
@@ -53,11 +54,11 @@ export class GoogleService {
     await this.revokeAccessToken(token);
   }
 
-  private async revokeAccessToken(accessToken: string): Promise<void> {
+  async revokeAccessToken(accessToken: string): Promise<void> {
     await this.googleOAuth2Client.revokeToken(accessToken);
   }
 
-  private async generateToken(user: any) {
+  async generateToken(user: any) {
     const access_token = await this.jwtService.signAsync(user, {
       secret: process.env.JWT_SECRET,
     });
