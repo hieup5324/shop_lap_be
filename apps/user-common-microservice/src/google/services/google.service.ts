@@ -43,6 +43,7 @@ export class GoogleService {
     if (userdb) {
       return { ...newUser, ...token };
     }
+    await this.addUser(newUser);
     return { ...newUser, ...token };
   }
 
