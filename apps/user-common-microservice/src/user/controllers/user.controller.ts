@@ -30,6 +30,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { ExecutePaymentInput } from '../dtos/execute-payment-input.dto';
 import { RegisterUser } from '../dtos/register-user.dto';
+import { ChangePasswordDto } from '../dtos/change-password.dto';
 
 @Controller('users')
 export class UserController {
@@ -86,6 +87,14 @@ export class UserController {
   async resetPassword(@Param('userId') userId: string) {
     const ticketUrl = await this.userService.resetPassword(userId);
     return { data: ticketUrl };
+  }
+
+  @Post('/change-password/:userId')
+  async changePassword(
+    @Param('userId') id: string,
+    @Body() userInput: ChangePasswordDto,
+  ) {
+    return this.userService.changePassword(id, userInput);
   }
 
   @Post()

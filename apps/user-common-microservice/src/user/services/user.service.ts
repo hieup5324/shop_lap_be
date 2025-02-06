@@ -39,6 +39,7 @@ import { S3Service } from '../../s3/services/s3.service';
 import { RegisterUser } from '../dtos/register-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ChangePasswordDto } from '../dtos/change-password.dto';
 
 const AUTH0 = 'auth0|';
 @Injectable()
@@ -315,5 +316,22 @@ export class UserService {
       refresh_token,
       user,
     };
+  }
+
+  async changePassword(userId: string, userInput: ChangePasswordDto) {
+    const user = await this.userRepository.findOneBy({ userId });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { oldPassword, newPassword } = userInput;
+    const checkpw = await bcrypt.compare(oldPassword, user.password);
+    if (!checkpw) {
+      throw new BadRequestException('Mật khẩu cũ không đúng');
+    }
+    const hashedPw = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPw;
+    await this.userRepository.save(user);
+    return { msg: 'Đổi mật khẩu thành công' };
   }
 }

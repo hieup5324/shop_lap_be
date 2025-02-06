@@ -13,6 +13,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: user_microservice_db
+    restart: always
 
   user-common:
     build:
@@ -25,13 +26,13 @@ services:
       - 3013:3000
     volumes:
       - ./:/usr/src/app
-      - ./node_modules:/usr/src/app/node_modules/
     environment:
       DB_HOST: mysqldb
     env_file:
       - ./apps/user-common-microservice/.env
     depends_on:
       - mysqldb
+    restart: always
 
   product-common:
     build:
@@ -44,14 +45,13 @@ services:
       - 3014:3000
     volumes:
       - ./:/usr/src/app
-      - ./node_modules:/usr/src/app/node_modules/
     environment:
       DB_HOST: mysqldb
     env_file:
       - ./apps/product-microservice/.env
     depends_on:
       - mysqldb
+    restart: always
 
 volumes:
-  node_modules:
   mysqldata:
