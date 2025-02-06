@@ -41,10 +41,18 @@ export class GoogleService {
     });
     const token = await this.generateToken(newUser);
     if (userdb) {
-      return { ...newUser, ...token };
+      return {
+        msg: 'đăng nhập thành công',
+        ...token,
+        user: userdb,
+      };
     }
     await this.addUser(newUser);
-    return { ...newUser, ...token };
+    return {
+      msg: 'đăng nhập thành công',
+      ...token,
+      user: newUser,
+    };
   }
 
   async addUser(user: Auth0UserDto) {
